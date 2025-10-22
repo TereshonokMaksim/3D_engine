@@ -2,6 +2,9 @@ import math
 import pygame
 import data as data
 
+def sign(number: int) -> int:
+    return str(number)[0] != "-" * 2 - 1
+
 def distance(point_1: list[int], point_2: list[int]):
     return sum([(point_1[axis] - point_2[axis]) ** 2 for axis in range(3)]) ** 0.5
 
@@ -50,6 +53,42 @@ class Point:
         pygame.draw.circle(surface, (220, 220, 220), visual_pos, max(min(50 * visual_multiplier, 2), 1))
 
         return [visual_pos, calculated_pos[2], visual_multiplier]
+
+class Line:
+    def __init__(self, start: list[int, int, int], end: list[int, int, int]):
+        '''
+            Used by BodySurface for distance calculations
+        '''
+        self.point_start = start
+        self.end_point = end
+        self.line_angle = math.atan2(end[0] - start[0], end[1] - start[1])
+        self.height = abs(end[1] - start[1])
+        # no, its not width of line as how thick it is
+        # instead, it is how much or X space it takes
+        self.width = abs(end[0] - start[0])
+
+    def get_middle_point(self) -> list[float, float, float]:
+        return [(self.point_start[axis] + self.end_point[axis]) / 2 for axis in range(3)]
+    
+    def get_border_distance(self, point: list[float, float, float]) -> float:
+        return min(sum([(point[axis] - self.point_start[axis]) ** 2 for axis in range(3)]), 
+                   sum([(point[axis] - self.end_point[axis]) ** 2 for axis in range(3)])) ** 0.5
+
+    def distance_to_point(self, point: list[int, int, int]) -> float | int:
+        middle = self.get_middle_point()
+        # no z, only some projection that work in my fantasy
+        point_relative = [point[axis] - middle[axis] for axis in range(2)]
+
+        # now, moment for my imagination and randomness to generate working thing!
+        y_point_increment = point_relative[1] / point_relative[0]
+        y_line_increment = middle[1] / middle[0]
+        height_sign = sign(point_relative[1])
+
+        # gonna check if line is not real (???) in y
+        if (y_point_increment * -self.width / 2 > height_sign * self.height / 2 or y_point_increment * self.width / 2 > height_sign * self.height):
+            return None
+
+
 
 class Cube:
     def __init__(self):
