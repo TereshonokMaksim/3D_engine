@@ -1,12 +1,15 @@
 import data as data
 import pygame
+from math import radians, cos, sin
 
 
 class Camera:
     def __init__(self):
-        self.angle = 90
+        self.angle = 0
         self.horizontal_angle = 0
-        self.position = [300, 300, -100]
+        self.position = [300, 300, 0]
+        self.distance = 200
+        self.center = [0, 0, 0]
         self.speed = 0.8
         self.FOV = 90
         self.focal_length = 70
@@ -16,6 +19,11 @@ class Camera:
             self.angle %= 360
         elif self.angle < -180:
             self.angle %= -360
+
+    def reposition(self):
+        self.position[1] = self.center[1] + sin(radians(self.angle)) * self.distance
+        self.position[0] = self.center[0] + sin(radians(self.horizontal_angle)) * self.distance
+        self.position[2] = self.center[2] + cos(radians(self.horizontal_angle)) * self.distance
 
     def react(self):
         keys = pygame.key.get_pressed()
@@ -32,4 +40,5 @@ class Camera:
             self.horizontal_angle += actual_speed
         elif keys[pygame.K_RIGHT]:
             self.horizontal_angle -= actual_speed
+        self.reposition()
         # self.fix_angles()
