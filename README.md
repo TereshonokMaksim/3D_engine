@@ -1,6 +1,3 @@
-# THIS IS DEV VERSION WHICH IS USED PRIMARILY FOR PROJECT TRANSPORTATION
-# DO NOT INSTALL IT OR USE IT, AS IT IS MOST LIKELY TO JUST CRASH
-
 ## How to use:
 
 1. Install the repository 
@@ -16,3 +13,8 @@ i. You can also create virtual enviroment (venv), but its not necessary.
 
     Applied rotation matrixes to transfer cube from 3D space to 2D surface.
     Used pygame.draw to visualize result 2D cube on window and for simple controls.
+
+#### 01.11.2025 - V0.2
+
+    Added coloring to sides and so, removed trasparency of the cube
+    Optimised calculations by a little

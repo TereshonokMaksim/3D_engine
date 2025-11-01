@@ -19,7 +19,7 @@ class Point:
     def __getitem__(self, index: int):
         return self.absolute_center[index] + self.position[index]
 
-    def draw(self, surface: pygame.Surface, vertical_angle: int = 0, horizontal_angle: int = 0, rotation: int = 0):
+    def calculate_pos(self, vertical_angle: int = 0, horizontal_angle: int = 0, rotation: int = 0):
         angles = [math.radians(horizontal_angle),
                   math.radians(vertical_angle),
                   math.radians(rotation)]
@@ -32,30 +32,20 @@ class Point:
 
         # vertical rolllll (angle[1] - controlled by arows)
         y2 = y1 * math.cos(angles[1]) - z1 * math.sin(angles[1])
-        z2 = y1 * math.sin(angles[1]) + z1 * math.cos(angles[1])
         x2 = x1
 
         # rollin'
         x3 = x2 * math.cos(angles[2]) - y2 * math.sin(angles[2])
         y3 = x2 * math.sin(angles[2]) + y2 * math.cos(angles[2])
-        z3 = z2
 
         x_offset = x3
         y_offset = y3
-        z_offset = z3
-
-        calculated_pos = [self.absolute_center[0] + x_offset, 
-                          self.absolute_center[1] + y_offset, 
-                          self.absolute_center[2] + z_offset]
+        
         visual_pos = [self.absolute_center[0] - x_offset + data.screen_size[0] // 2, 
                       self.absolute_center[1] - y_offset + data.screen_size[1] // 2]
         self.visual_pos = visual_pos
         
-        pygame.draw.circle(surface, (220, 220, 220), visual_pos, 2)
-        if self.name == "Point 4":
-            pygame.draw.circle(surface, (0, 255, 255), visual_pos, 6)
-            # print(distance(self, data.camera.position))
-            # print([(self[axis] - data.camera.position[axis]) ** 2 for axis in range(3)])
+        # pygame.draw.circle(surface, (220, 220, 220), visual_pos, 2)
 
         return visual_pos
 
@@ -129,7 +119,7 @@ class Cube:
                          BodySurface([*self.points[1:3], *reversed(self.points2[1:3])], (0, 0, 255)),
                          BodySurface([*self.points[2:], *reversed(self.points2[2:])], (0, 255, 0)),
                          BodySurface([self.points[3], self.points[0], self.points2[0], self.points2[3]], (0, 0, 255)),
-                         BodySurface(self.points2, (255, 0, 0))
+                         BodySurface([*self.points2], (255, 0, 0))
                          ]
         self.CUBING = True
     
@@ -138,10 +128,10 @@ class Cube:
         point2_cors = []
         if self.CUBING:
             for corner in self.points:
-                point_cors.append(corner.draw(surface = surface, vertical_angle = vertical_angle, horizontal_angle = horizontal_angle))
+                point_cors.append(corner.calculate_pos(vertical_angle = vertical_angle, horizontal_angle = horizontal_angle))
             pygame.draw.polygon(surface, (220, 220, 220), [point_cors[index] for index in range(len(point_cors))], 5)
         for corner in self.points2:
-            point2_cors.append(corner.draw(surface = surface, vertical_angle = vertical_angle, horizontal_angle = horizontal_angle))
+            point2_cors.append(corner.calculate_pos(vertical_angle = vertical_angle, horizontal_angle = horizontal_angle))
         pygame.draw.polygon(surface, (220, 220, 220), [point2_cors[index] for index in range(len(point2_cors))], 5)
         if self.CUBING:
             for point_index in range(4):
@@ -159,15 +149,12 @@ class Cube:
                 distances[distance_to] = [body_surface]
         sorted_distances = {}
         surfaces_shown = 0
-        # sort_dist: body_surf for sort_dist, body_surf in zip(sorted(distances.keys())[:round(len(self.surfaces) / 2 + 1)], list(distances.values())[:round(len(self.surfaces) / 2 + 1)])
         for surf_dista in sorted(distances.keys()):
             sorted_distances[surf_dista] = distances[surf_dista]
             surfaces_shown += len(distances[surf_dista])
             if surfaces_shown >= round(len(distances) / 2):
                 break
-        # print(sorted_distances)
         for surf_list in reversed(sorted_distances.values()):
-            # print(len(distances), len(self.surfaces))
             for surf in surf_list:
                 surf.fill(surface)
         return [0, 0]

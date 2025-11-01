@@ -43,10 +43,10 @@ while run:
         FPS_data.clear()
 
     data.camera.react()
-    data_smth = point.draw(data.draw_surface, data.camera.angle, data.camera.horizontal_angle)
+    data_smth = point.draw(data.draw_surface, data.camera.vertical_angle, data.camera.horizontal_angle)
 
     data.display.blit(data.draw_surface, (0, 0))
     data.display.blit(FPS_surface, FPS_pos)
-    data.display.blit(FPS_font.render(f"Angle: {round(data.camera.horizontal_angle), round(data.camera.angle)}; Post: {[round(val) for val in data.camera.position]}", True, (200, 200, 200)), [FPS_pos[0], FPS_pos[1] + FPS_surface.get_height() + 10])
+    data.display.blit(FPS_font.render(f"Angle: {round(data.camera.horizontal_angle), round(data.camera.vertical_angle)}; Position: {[round(val) for val in data.camera.position]}", True, (200, 200, 200)), [FPS_pos[0], FPS_pos[1] + FPS_surface.get_height() + 10])
 
     pygame.display.flip()
